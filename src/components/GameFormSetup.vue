@@ -19,6 +19,17 @@
           </a-card>
         </a-col>
       </a-row>
+
+        <router-link
+          v-if="teams.every(team => team.players.length === 5)"
+          :to="{ name: 'process' }"
+          v-slot="{ navigate }"
+        >
+          <a-button block @click="navigate" class="button">
+            Продолжить
+          </a-button>
+        </router-link>
+      
     </div>
 </template>
 
