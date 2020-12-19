@@ -12,23 +12,7 @@ const store = new Vuex.Store({
     players,
     completedGameDays: [],
     currentGameDay: {
-      teams: [
-        {
-          name: 'Команда 1',
-          id: generateId(),
-          playersIds: [],
-        },
-        {
-          name: 'Команда 2',
-          id: generateId(),
-          playersIds: [],
-        },
-        {
-          name: 'Команда 3',
-          id: generateId(),
-          playersIds: [],
-        }
-      ],
+      teams: [],
       completedGames: [],
       currentGame: null,
     },
@@ -46,6 +30,9 @@ const store = new Vuex.Store({
     },
     createGameDay(state, { teams }) {
       state.currentGameDay.teams = teams;
+    },
+    initFirstGame(state, { game }) {
+      state.currentGameDay.currentGame = game;
     },
   },
 });

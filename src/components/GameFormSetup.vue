@@ -20,21 +20,15 @@
         </a-col>
       </a-row>
 
-        <router-link
-          v-if="teams.every(team => team.players.length === 5)"
-          :to="{ name: 'process' }"
-          v-slot="{ navigate }"
-        >
-          <a-button block @click="navigate" class="button">
+
+      <a-button block @click="next" class="button" v-if="teams.every(team => team.players.length === 5)">
             Продолжить
-          </a-button>
-        </router-link>
-      
+      </a-button>
     </div>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'game-form-setup-view',
@@ -42,16 +36,37 @@ export default {
     return {
       teams: [
         {
-          name: 'Первая Команда',
-          players: [],
+          name: 'Жёлтая Команда',
+          id: 1,
+          players: [
+            '1',
+            '2',
+            '3',
+            '4',
+            '5',
+          ],
         },
         {
-          name: 'Вторая Команда',
-          players: [],
+          name: 'Красная Команда',
+          id: 2,
+          players: [
+            '6',
+            '7',
+            '8',
+            '9',
+            '10',
+          ],
         },
         {
-          name: 'Третья Команда',
-          players: [],
+          name: 'Фиолетовая Команда',
+          id: 3,
+          players: [
+            '11',
+            '12',
+            '13',
+            '14',
+            '15',
+          ],
         },
       ],
     };
@@ -65,6 +80,7 @@ export default {
     },
   },
   methods: {
+    ...mapMutations(['createGameDay']),
     handleChange(team, value) {
       this.teams.splice(
           this.teams.findIndex(t => t.name === team.name),
@@ -88,6 +104,10 @@ export default {
         1,
         newTeam,
       );
+    },
+    next() {
+      this.createGameDay({ teams: this.teams });
+      this.$router.push({ name: 'process' });
     },
   },
 }
