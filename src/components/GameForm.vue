@@ -4,16 +4,23 @@
                             @ok="createFirstGame" />
     <div class="current-game" v-if="!selectBeginnersModalIsVisible">
       <a-row>
-        <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam" />
+        <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam"
+                              :game-has-started="currentGameHasStarted" />
         <a-col :span="8">
-          <div class="score">{{firstTeamScore}}:{{secondTeamScore}}</div>
-
-          <a-button block class="start-the-game-btn" type="primary" @click="startCurrentGame" v-if="!currentGameHasStarted">Начать игру!!!</a-button>
+          <game-score />
+          <a-button block class="start-the-game-btn"
+                    type="primary"
+                    @click="startCurrentGame"
+                    v-if="!currentGameHasStarted"
+                    size="large">
+            Начать игру!!!
+          </a-button>
           <div v-else class="time-left">
             {{timeLeftFormatted}}
           </div>
         </a-col>
-        <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam" />
+        <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
+                              :game-has-started="currentGameHasStarted"/>
       </a-row>
     </div>
   </div>
@@ -24,12 +31,14 @@ import { mapState, mapMutations } from 'vuex';
 
 import SelectBeginnersModal from '@/components/gameForm/selectBeginnersModal';
 import TeamInMatchColumn from '@/components/gameForm/teamInMatchColumn';
+import GameScore from '@/components/gameForm/gameScore';
 
 export default {
   name: 'game-form-view',
   components: {
     SelectBeginnersModal,
     TeamInMatchColumn,
+    GameScore,
   },
   data() {
     return {
@@ -83,25 +92,11 @@ export default {
     selectBeginnersModalIsVisible() {
       return !this.currentGameDay.currentGame;
     },
-    firstTeamScore() {
-      return this.currentGameDay.currentGame.firstTeam.goals.length;
-    },
-    secondTeamScore() {
-      return this.currentGameDay.currentGame.secondTeam.goals.length;
-    },
   },
 }
 </script>
 
 <style scoped>
-  .team-name {
-    font-size: 20px;
-  }
-
-  .score {
-    font-size: 30px;
-  }
-
   .start-the-game-btn {
     margin-top: 50px;
   }

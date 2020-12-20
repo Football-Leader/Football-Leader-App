@@ -2,7 +2,10 @@
   <a-col :span="8">
     <div class="team-name">{{team.name}}</div>
     <div class="team-players">
-      <a-button block v-for="playerId in team.players" :key="playerId">
+      <a-button block
+                v-for="playerId in team.players"
+                :key="playerId"
+                :disabled="!gameHasStarted">
         {{getPlayerName(playerId)}}
       </a-button>
     </div>
@@ -16,6 +19,7 @@ export default {
   name: 'team-in-match-column',
   props: {
     teamInMatch: Object,
+    gameHasStarted: Boolean,
   },
   methods: {
     getPlayerName(playerId) {
