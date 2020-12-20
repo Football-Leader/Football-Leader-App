@@ -143,8 +143,8 @@
             return 1;
           }
 
-          const diffA = a.scored - a.loses;
-          const diffB = b.scored - b.loses;
+          const diffA = a.scored - a.failed;
+          const diffB = b.scored - b.failed;
 
           if (diffA > diffB) {
             return -1;
