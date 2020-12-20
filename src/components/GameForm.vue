@@ -5,7 +5,8 @@
     <div class="current-game" v-if="!selectBeginnersModalIsVisible">
       <a-row>
         <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam"
-                              :game-has-started="currentGameHasStarted" />
+                              :game-has-started="currentGameHasStarted"
+                              @goal="playerId => handleGoal(currentGameDay.currentGame.firstTeam.id, playerId)"/>
         <a-col :span="8">
           <game-score />
           <a-button block class="start-the-game-btn"
@@ -20,7 +21,8 @@
           </div>
         </a-col>
         <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
-                              :game-has-started="currentGameHasStarted"/>
+                              :game-has-started="currentGameHasStarted"
+                              @goal="playerId => handleGoal(currentGameDay.currentGame.secondTeam.id, playerId)"/>
       </a-row>
     </div>
   </div>
@@ -70,6 +72,23 @@ export default {
             goals: [],
           },
         },
+      });
+    },
+    handleGoal(teamId, playerId) {
+      const goal = {
+        author: playerId,
+        time: 7 * 60 - this.timeLeft,
+      };
+
+      const updatedGame = JSON.parse(JSON.stringify(this.currentGameDay.currentGame));
+      if (updatedGame.firstTeam.id === teamId) {
+        updatedGame.firstTeam.goals.push(goal);
+      } else {
+        updatedGame.secondTeam.goals.push(goal);
+      }
+
+      this.initFirstGame({
+        game: updatedGame,
       });
     },
   },

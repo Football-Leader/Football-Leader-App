@@ -5,7 +5,8 @@
       <a-button block
                 v-for="playerId in team.players"
                 :key="playerId"
-                :disabled="!gameHasStarted">
+                :disabled="!gameHasStarted"
+                @click="handlePlayerClick(playerId)">
         {{getPlayerName(playerId)}}
       </a-button>
     </div>
@@ -24,6 +25,16 @@ export default {
   methods: {
     getPlayerName(playerId) {
       return this.players.find(({ id }) => id === playerId).name;
+    },
+    handlePlayerClick(playerId) {
+      this.$confirm({
+        title: `${this.getPlayerName(playerId)} забил гол, вы уверены?`,
+        onOk: () => {
+          this.$emit('goal', playerId);
+        },
+        okText: 'Да',
+        cancelText: 'Я перепутал',
+      });
     },
   },
   computed: {
