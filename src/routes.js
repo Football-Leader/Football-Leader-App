@@ -2,6 +2,7 @@ import MenuView from '@/components/MenuView';
 import PlayersView from '@/components/PlayersView';
 import GameFormSetup from '@/components/GameFormSetup';
 import GameForm from '@/components/GameForm';
+import StatsView from '@/components/StatsView';
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -28,6 +29,11 @@ const routes = [
     path: '/process',
     name: 'process',
     component: GameForm,
+  },
+  {
+    path: '/stats',
+    name: 'stats',
+    component: StatsView,
   },
 ];
 

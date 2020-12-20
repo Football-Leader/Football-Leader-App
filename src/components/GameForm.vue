@@ -19,6 +19,11 @@
           <div v-else class="time-left">
             {{timeLeftFormatted}}
           </div>
+          <div class="complete-day-btn">
+            <a-button type="danger" size="small" @click="completeTheDay">
+              Завершить день
+            </a-button>
+          </div>
         </a-col>
         <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
                               :game-has-started="currentGameHasStarted"
@@ -55,7 +60,9 @@ export default {
     async tryEndTheGame() {
       const { firstTeam, secondTeam } = this.currentGameDay.currentGame;
       if (this.timeLeft === 0 || firstTeam.goals.length === 2 || secondTeam.goals.length === 2) {
-        await this.completeTheCurrentGame();
+        if (this.currentGameHasStarted) {
+          await this.completeTheCurrentGame();
+        }
 
         clearTimeout(this.timeoutId);
         clearInterval(this.intervalId);
@@ -108,6 +115,18 @@ export default {
 
       this.tryEndTheGame();
     },
+    completeTheDay() {
+      this.$confirm({
+        title: `Время аренды зала вышло, либо все уже поломались и устали? Давайте завершим играть!`,
+        okText: 'Да, заканчиваем',
+        cancelText: 'Я перепутал, ещё есть время поиграть',
+        onOk: async () => {
+          this.timeLeft = 0;
+          await this.tryEndTheGame();
+          await this.$router.push({name: 'stats'});
+        },
+      });
+    },
   },
   computed: {
     ...mapState(['currentGameDay', 'players']),
@@ -140,5 +159,9 @@ export default {
   .time-left {
     margin-top: 50px;
     font-size: 25px;
+  }
+
+  .complete-day-btn {
+    margin-top: 50px;
   }
 </style>
