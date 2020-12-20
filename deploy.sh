@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # остановить публикацию при ошибках
-set -e
+# set -e
 
 # сборка
 npm run build
@@ -17,9 +17,9 @@ git add -A
 git commit -m 'deploy'
 
 # если вы публикуете по адресу https://<USERNAME>.github.io
-git push -f git@github.com:<USERNAME>/<USERNAME>.github.io.git master
+# git push -f git@github.com:Imperat/Imperat.github.io.git master
 
 # если вы публикуете по адресу https://<USERNAME>.github.io/<REPO>
-# git push -f git@github.com:<USERNAME>/<REPO>.git master:gh-pages
+git push -f git@github.com:Football-Leader/Football-Leader-App.git master:gh-pages
 
 cd -
