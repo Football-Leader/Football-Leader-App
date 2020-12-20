@@ -1,30 +1,8 @@
 <template>
   <div>
-    <a-modal
-        :visible="chooseTeamsModalIsVisible"
-        title="Выберите две команды, которые начнут играть первыми"
-        :ok-button-props="{ props: { disabled: !teamsModalCanBeClosed } }"
-        :cancel-button-props="{ props: { disabled: true } }"
-        @ok="createFirstGame"
-    >
-      <div>
-        <div>
-          <a-select default-value="" style="width: 120px" @change="selectFirstTeam">
-            <a-select-option v-for="team in teams" :key="team.id" :value="team.id" >
-              {{team.name}}
-            </a-select-option>
-          </a-select>
-        </div>
-        <div>
-          <a-select default-value="" style="width: 120px" @change="selectSecondTeam">
-            <a-select-option  v-for="team in teams" :key="team.id" :value="team.id">
-              {{team.name}}
-            </a-select-option>
-          </a-select>
-        </div>
-      </div>
-    </a-modal>
-    <div class="current-game" v-if="!chooseTeamsModalIsVisible">
+    <select-beginners-modal :visible="selectBeginnersModalIsVisible"
+                            @ok="createFirstGame" />
+    <div class="current-game" v-if="!selectBeginnersModalIsVisible">
       <a-row>
         <a-col :span="8">
           <div class="team-name">{{firstTeamName}}</div>
@@ -54,12 +32,15 @@
 <script>
 import { mapState, mapMutations } from 'vuex';
 
+import SelectBeginnersModal from '@/components/gameForm/selectBeginnersModal';
+
 export default {
   name: 'game-form-view',
+  components: {
+    SelectBeginnersModal,
+  },
   data() {
     return {
-      firstTeamId: null,
-      secondTeamId: null,
       currentGameHasStarted: false,
       timeLeft: 7 * 60,
     };
@@ -85,17 +66,11 @@ export default {
         clearInterval(counterId);
       }, 1000 * 7 * 60);
     },
-    selectFirstTeam(id) {
-      this.firstTeamId = id;
-    },
-    selectSecondTeam(id) {
-      this.secondTeamId = id;
-    },
-    createFirstGame() {
+    createFirstGame({ firstTeamId, secondTeamId }) {
       this.initFirstGame({
         game: {
-          firstTeamId: this.firstTeamId,
-          secondTeamId: this.secondTeamId,
+          firstTeamId,
+          secondTeamId,
           firstTeamScore: 0,
           secondTeamScore: 0,
         },
@@ -118,17 +93,8 @@ export default {
 
       return `Осталось ${seconds} секунд`;
     },
-    chooseTeamsModalIsVisible() {
+    selectBeginnersModalIsVisible() {
       return !this.currentGameDay.currentGame;
-    },
-    teams() {
-      const allTeams = this.currentGameDay.teams;
-      const selectedTeams = [this.firstTeamId, this.secondTeamId].filter(Boolean);
-
-      return allTeams.filter(({ id }) => !selectedTeams.includes(id));
-    },
-    teamsModalCanBeClosed() {
-      return this.firstTeamId && this.secondTeamId;
     },
     firstTeamName() {
       const teamId = this.currentGameDay.currentGame.firstTeamId;
