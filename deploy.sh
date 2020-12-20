@@ -20,6 +20,6 @@ git commit -m 'deploy'
 # git push -f git@github.com:Imperat/Imperat.github.io.git master
 
 # если вы публикуете по адресу https://<USERNAME>.github.io/<REPO>
-git push -f git@github.com:Football-Leader/Football-Leader-App.git master:gh-pages
+git push -f https://github.com/Football-Leader/Football-Leader-App.git master:gh-pages
 
 cd -
