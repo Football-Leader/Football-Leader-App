@@ -17,7 +17,11 @@ export default {
   name: 'App',
   components: {
 
-  }
+  },
+  created() {
+    window.vueRouter = this.$router;
+    console.log('this', this);
+  },
 }
 </script>
 
