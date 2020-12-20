@@ -4,12 +4,7 @@
                             @ok="createFirstGame" />
     <div class="current-game" v-if="!selectBeginnersModalIsVisible">
       <a-row>
-        <a-col :span="8">
-          <div class="team-name">{{firstTeamName}}</div>
-          <div class="team-players">
-            <a-button block v-for="playerId in firstTeamPlayers" :key="playerId">{{getPlayerName(playerId)}}</a-button>
-          </div>
-        </a-col>
+        <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam" />
         <a-col :span="8">
           <div class="score">{{firstTeamScore}}:{{secondTeamScore}}</div>
 
@@ -18,12 +13,7 @@
             {{timeLeftFormatted}}
           </div>
         </a-col>
-        <a-col :span="8">
-          <div class="team-name">{{secondTeamName}}</div>
-          <div class="team-players">
-            <a-button block v-for="playerId in secondTeamPlayers" :key="playerId">{{getPlayerName(playerId)}}</a-button>
-          </div>
-        </a-col>
+        <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam" />
       </a-row>
     </div>
   </div>
@@ -33,11 +23,13 @@
 import { mapState, mapMutations } from 'vuex';
 
 import SelectBeginnersModal from '@/components/gameForm/selectBeginnersModal';
+import TeamInMatchColumn from '@/components/gameForm/teamInMatchColumn';
 
 export default {
   name: 'game-form-view',
   components: {
     SelectBeginnersModal,
+    TeamInMatchColumn,
   },
   data() {
     return {
@@ -47,15 +39,6 @@ export default {
   },
   methods: {
     ...mapMutations(['initFirstGame']),
-    getTeamName(teamId) {
-      return this.getTeamById(teamId).name;
-    },
-    getPlayerName(playerId) {
-      return this.players.find(({ id }) => id === playerId).name;
-    },
-    getTeamById(teamId) {
-      return this.currentGameDay.teams.find(({ id }) => id === teamId);
-    },
     startCurrentGame() {
       this.currentGameHasStarted = true;
       const counterId = setInterval(() => {
@@ -69,10 +52,14 @@ export default {
     createFirstGame({ firstTeamId, secondTeamId }) {
       this.initFirstGame({
         game: {
-          firstTeamId,
-          secondTeamId,
-          firstTeamScore: 0,
-          secondTeamScore: 0,
+          firstTeam: {
+            id: firstTeamId,
+            goals: [],
+          },
+          secondTeam: {
+            id: secondTeamId,
+            goals: [],
+          },
         },
       });
     },
@@ -96,25 +83,11 @@ export default {
     selectBeginnersModalIsVisible() {
       return !this.currentGameDay.currentGame;
     },
-    firstTeamName() {
-      const teamId = this.currentGameDay.currentGame.firstTeamId;
-      return this.getTeamName(teamId);
-    },
-    secondTeamName() {
-      const teamId = this.currentGameDay.currentGame.secondTeamId;
-      return this.getTeamName(teamId);
-    },
     firstTeamScore() {
-      return this.currentGameDay.currentGame.firstTeamScore;
+      return this.currentGameDay.currentGame.firstTeam.goals.length;
     },
     secondTeamScore() {
-      return this.currentGameDay.currentGame.secondTeamScore;
-    },
-    firstTeamPlayers() {
-      return this.getTeamById(this.currentGameDay.currentGame.firstTeamId).players;
-    },
-    secondTeamPlayers() {
-      return this.getTeamById(this.currentGameDay.currentGame.secondTeamId).players;
+      return this.currentGameDay.currentGame.secondTeam.goals.length;
     },
   },
 }
