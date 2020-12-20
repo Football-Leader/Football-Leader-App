@@ -46,18 +46,33 @@ export default {
     return {
       currentGameHasStarted: false,
       timeLeft: 7 * 60,
+      timeoutId : null,
+      intervalId: null,
     };
   },
   methods: {
-    ...mapMutations(['initFirstGame']),
+    ...mapMutations(['initFirstGame', 'completeTheCurrentGame']),
+    async tryEndTheGame() {
+      const { firstTeam, secondTeam } = this.currentGameDay.currentGame;
+      if (this.timeLeft === 0 || firstTeam.goals.length === 2 || secondTeam.goals.length === 2) {
+        await this.completeTheCurrentGame();
+
+        clearTimeout(this.timeoutId);
+        clearInterval(this.intervalId);
+        this.timeLeft = 7 * 60;
+        this.currentGameHasStarted = false;
+      }
+    },
     startCurrentGame() {
       this.currentGameHasStarted = true;
-      const counterId = setInterval(() => {
+      this.intervalId = setInterval(() => {
         this.timeLeft -= 1;
       }, 1000);
 
-      setTimeout(() => {
-        clearInterval(counterId);
+      this.timeoutId = setTimeout(() => {
+        clearInterval(this.intervalId);
+        this.timeLeft = 0;
+        this.tryEndTheGame();
       }, 1000 * 7 * 60);
     },
     createFirstGame({ firstTeamId, secondTeamId }) {
@@ -74,7 +89,7 @@ export default {
         },
       });
     },
-    handleGoal(teamId, playerId) {
+    async handleGoal(teamId, playerId) {
       const goal = {
         author: playerId,
         time: 7 * 60 - this.timeLeft,
@@ -87,9 +102,11 @@ export default {
         updatedGame.secondTeam.goals.push(goal);
       }
 
-      this.initFirstGame({
+      await this.initFirstGame({
         game: updatedGame,
       });
+
+      this.tryEndTheGame();
     },
   },
   computed: {
