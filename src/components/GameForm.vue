@@ -30,6 +30,10 @@
                               @goal="playerId => handleGoal(currentGameDay.currentGame.secondTeam.id, playerId)"/>
       </a-row>
     </div>
+    <div>
+      Сыгранные игры:
+      <completed-games />
+    </div>
   </div>
 </template>
 
@@ -39,6 +43,7 @@ import { mapState, mapMutations } from 'vuex';
 import SelectBeginnersModal from '@/components/gameForm/selectBeginnersModal';
 import TeamInMatchColumn from '@/components/gameForm/teamInMatchColumn';
 import GameScore from '@/components/gameForm/gameScore';
+import CompletedGames from '@/components/gameForm/completedGames';
 
 export default {
   name: 'game-form-view',
@@ -46,6 +51,7 @@ export default {
     SelectBeginnersModal,
     TeamInMatchColumn,
     GameScore,
+    CompletedGames,
   },
   data() {
     return {
