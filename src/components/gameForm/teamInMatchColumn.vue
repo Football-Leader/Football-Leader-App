@@ -1,16 +1,16 @@
 <template>
-  <a-col :span="8">
+  <div>
     <div class="team-name">{{team.name}}</div>
     <div class="team-players">
-      <a-button block
+      <button   class="player-btn"
                 v-for="playerId in team.players"
                 :key="playerId"
                 :disabled="!gameHasStarted"
                 @click="handlePlayerClick(playerId)">
         {{getPlayerName(playerId)}}
-      </a-button>
+      </button>
     </div>
-  </a-col>
+  </div>
 </template>
 
 <script>
@@ -49,5 +49,19 @@ export default {
 <style scoped>
   .team-name {
     font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .team-players {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .player-btn {
+    border: 1px solid gainsboro;
+    background: #eaecef;
+    padding: 8px 0;
+    color: black;
+    margin: 5px 0;
   }
 </style>

@@ -2,36 +2,46 @@
   <div>
     <select-beginners-modal :visible="selectBeginnersModalIsVisible"
                             @ok="createFirstGame" />
-    <div class="current-game" v-if="!selectBeginnersModalIsVisible">
-      <a-row>
-        <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam"
-                              :game-has-started="currentGameHasStarted"
-                              @goal="playerId => handleGoal(currentGameDay.currentGame.firstTeam.id, playerId)"/>
-        <a-col :span="8">
-          <game-score />
-          <a-button block class="start-the-game-btn"
-                    type="primary"
-                    @click="startCurrentGame"
-                    v-if="!currentGameHasStarted"
-                    size="large">
-            Начать игру!!!
-          </a-button>
-          <div v-else class="time-left">
-            {{timeLeftFormatted}}
-          </div>
-          <div class="complete-day-btn">
-            <a-button type="danger" size="small" @click="completeTheDay">
-              Завершить день
-            </a-button>
-          </div>
-        </a-col>
-        <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
-                              :game-has-started="currentGameHasStarted"
-                              @goal="playerId => handleGoal(currentGameDay.currentGame.secondTeam.id, playerId)"/>
-      </a-row>
+    <div>
+      <table style="width: 100%">
+        <colgroup>
+          <col span="1" style="width: 40%;">
+          <col span="1" style="width: 20%;">
+          <col span="1" style="width: 40%;">
+        </colgroup>
+        <tr>
+          <td>
+            <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam"
+                                  :game-has-started="currentGameHasStarted"
+                                  @goal="playerId => handleGoal(currentGameDay.currentGame.firstTeam.id, playerId)"/>
+          </td>
+          <td>
+            <game-score />
+            <button class="start-the-game-btn"
+                      type="primary"
+                      @click="startCurrentGame"
+                      v-if="!currentGameHasStarted"
+                      size="large">
+              Начать игру
+            </button>
+            <div v-else class="time-left">
+              {{timeLeftFormatted}}
+            </div>
+            <div class="complete-day-btn">
+              <a-button type="danger" size="small" @click="completeTheDay">
+                <a-icon type="close-circle" /> Завершить день
+              </a-button>
+            </div>
+          </td>
+          <td>
+            <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
+                                  :game-has-started="currentGameHasStarted"
+                                  @goal="playerId => handleGoal(currentGameDay.currentGame.secondTeam.id, playerId)"/>
+          </td>
+        </tr>
+      </table>
     </div>
     <div>
-      Сыгранные игры:
       <completed-games />
     </div>
   </div>
@@ -160,6 +170,11 @@ export default {
 <style scoped>
   .start-the-game-btn {
     margin-top: 50px;
+    padding: 8px 2px;
+    background: #1890ff;
+    color: white;
+    border: 1px solid #1890ff;
+    border-radius: 2px;
   }
 
   .time-left {

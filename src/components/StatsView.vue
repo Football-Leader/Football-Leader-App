@@ -119,7 +119,7 @@
 
           teamsMap[secondTeam.id].games += 1;
           teamsMap[secondTeam.id].scored += secondTeam.goals.length;
-          teamsMap[secondTeam.id].failed = firstTeam.goals.length;
+          teamsMap[secondTeam.id].failed += firstTeam.goals.length;
 
           if (firstTeam.goals.length === secondTeam.goals.length) {
             teamsMap[firstTeam.id].points += 1;

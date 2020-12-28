@@ -1,55 +1,84 @@
 <template>
-  <div>
-    <div v-for="(game, index) in completedGames" :key="index" class="game">
-      <div class="team-name">
-        <div>{{getTeam(game.firstTeam.id).name}}</div>
-        <div v-for="(goal, index) in game.firstTeam.goals" :key="index">
-          {{formatTime(goal.time)}}' {{getPlayerName(goal.author)}}
-        </div>
-      </div>
-      <div>{{game.firstTeam.goals.length}} - {{game.secondTeam.goals.length}}</div>
-      <div class="team-name">
-        <div>{{getTeam(game.secondTeam.id).name}}</div>
-        <div v-for="(goal, index) in game.secondTeam.goals" :key="index">
-          {{formatTime(goal.time)}}' {{getPlayerName(goal.author)}}
-        </div>
-      </div>
-    </div>
-  </div>
+  <table class="games-table">
+    <caption>Завершённые игры</caption>
+    <colgroup>
+      <col span="1" style="width: 40%;">
+      <col span="1" style="width: 20%;">
+      <col span="1" style="width: 40%;">
+    </colgroup>
+    <tr>
+      <th>Команда 1</th>
+      <th>Счёт</th>
+      <th>Команда 2</th>
+    </tr>
+    <tr v-for="(game, index) in completedGames" :key="index">
+      <td>
+        <completed-game-team-item :team-id="game.firstTeam.id"
+                                  :goals="game.firstTeam.goals"
+                                  :won="firstTeamWon(game)" />
+      </td>
+      <td>
+        {{ game.firstTeam.goals.length }} - {{ game.secondTeam.goals.length }}
+      </td>
+      <td>
+        <completed-game-team-item :team-id="game.secondTeam.id"
+                                  :goals="game.secondTeam.goals"
+                                  :won="secondTeamWon(game)" />
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
   import { mapState } from 'vuex';
 
+  import CompletedGameTeamItem from './completedGameTeamItem';
+
   export default {
     name: 'completed-games',
+    components: {
+      CompletedGameTeamItem,
+    },
     computed: {
-      ...mapState(['currentGameDay', 'players']),
+      ...mapState(['currentGameDay']),
       completedGames() {
         return this.currentGameDay.completedGames;
       },
     },
     methods: {
-      getTeam(teamId) {
-        return this.currentGameDay.teams.find(t => t.id === teamId);
+      firstTeamWon(game) {
+        return game.firstTeam.goals.length > game.secondTeam.goals.length;
       },
-      getPlayerName(playerId) {
-        return this.players.find((p) => p.id === playerId).name;
-      },
-      formatTime(sec) {
-        return `${Math.floor(sec / 60 + 1)} мин`;
+      secondTeamWon(game) {
+        return game.secondTeam.goals.length > game.firstTeam.goals.length;
       },
     },
   }
 </script>
 
 <style scoped>
-  .game {
-    display: flex;
-    padding: 5px;
+  .games-table {
+    width: 100%;
+    table-layout: fixed;
+    border: 1px solid gainsboro;
   }
 
-  .team-name {
-    font-weight: bold;
+  .games-table caption {
+    caption-side: top;
+    text-align: center;
+  }
+
+  .games-table th {
+    padding: 20px;
+    font-size: 15px;
+  }
+
+  .games-table td {
+    padding: 10px;
+    border: 1px solid gainsboro;
+  }
+
+  .games-table tr:nth-child(2n + 1) {
+    background: #48383808;
   }
 </style>

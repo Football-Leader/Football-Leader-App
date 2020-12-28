@@ -107,6 +107,14 @@ const players = [
     id: '26',
     name: 'Евгений Анатольевич'
   },
+  {
+    id: '27',
+    name: 'Амарок',
+  },
+  {
+    id: '28',
+    name: 'Артём',
+  },
 ];
 
 export default players;
