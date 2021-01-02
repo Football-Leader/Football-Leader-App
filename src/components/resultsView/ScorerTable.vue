@@ -10,7 +10,9 @@
       <th>Забил</th>
     </tr>
     <tr v-for="scorer in scorers" :key="scorer.id">
-      <td col="3">{{scorer.name}} ({{scorer.team.name}})</td>
+      <td col="3" class="name">
+        {{scorer.name}}
+        <div class="team-name">({{scorer.team.name}})</div></td>
       <td col="1">{{scorer.scored}}</td>
     </tr>
   </table>
@@ -83,5 +85,16 @@ export default {
   .scorers-table td {
     border: 1px solid gainsboro;
     padding: 5px;
+  }
+
+  .scorers-table .name {
+    text-align: left;
+    font-weight: bold;
+    font-size: 12px;
+  }
+
+  .scorers-table .team-name {
+    font-weight: normal;
+    font-size: 10px;
   }
 </style>

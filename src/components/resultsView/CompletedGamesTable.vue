@@ -2,15 +2,15 @@
   <table class="completed-games-table">
     <caption>Турнирная таблица</caption>
     <colgroup>
-      <col span="1" style="width: 40%">
-      <col span="1" style="width: 5%">
-      <col span="1" style="width: 5%">
-      <col span="1" style="width: 5%">
-      <col span="1" style="width: 5%">
-      <col span="1" style="width: 5%">
-      <col span="1" style="width: 5%">
-      <col span="1" style="width: 5%">
-      <col span="1" style="width: 5%">
+      <col span="1" style="width: 34%">
+      <col span="1" style="width: 7%">
+      <col span="1" style="width: 7%">
+      <col span="1" style="width: 7%">
+      <col span="1" style="width: 7%">
+      <col span="1" style="width: 7%">
+      <col span="1" style="width: 7%">
+      <col span="1" style="width: 7%">
+      <col span="1" style="width: 7%">
     </colgroup>
     <tr>
       <th>Команда</th>
@@ -24,15 +24,22 @@
       <th>О</th>
     </tr>
     <tr v-for="teamStat in teamStats" :key="teamStat.id">
-      <td>{{ teamStat.name }}</td>
-      <td>{{ teamStat.games }}</td>
-      <td>{{ teamStat.wins }}</td>
-      <td>{{ teamStat.draw }}</td>
-      <td>{{ teamStat.loses }}</td>
-      <td>{{ teamStat.scored }}</td>
-      <td>{{ teamStat.failed }}</td>
-      <td>{{ teamStat.scored - teamStat.failed }}</td>
-      <td>{{ teamStat.points }}</td>
+      <td>
+        <div class="team-name">
+          {{ teamStat.name }}
+        </div>
+        <div class="team-players">
+          <div v-for="player in teamStat.players" :key="player">{{playerName(player)}}</div>
+        </div>
+      </td>
+      <td class="cell">{{ teamStat.games }}</td>
+      <td class="cell">{{ teamStat.wins }}</td>
+      <td class="cell">{{ teamStat.draw }}</td>
+      <td class="cell">{{ teamStat.loses }}</td>
+      <td class="cell">{{ teamStat.scored }}</td>
+      <td class="cell">{{ teamStat.failed }}</td>
+      <td class="cell">{{ teamStat.scored - teamStat.failed }}</td>
+      <td class="cell">{{ teamStat.points }}</td>
     </tr>
   </table>
 </template>
@@ -42,13 +49,19 @@ import { mapState } from 'vuex';
 
 export default {
   name: 'completed-games-table',
+  methods: {
+    playerName(playerId) {
+      return this.players.find(p => p.id === playerId).name;
+    },
+  },
   computed: {
-    ...mapState(['currentGameDay']),
+    ...mapState(['currentGameDay', 'players']),
     teamStats() {
       const teams = this.currentGameDay.teams.map((team) => {
         return {
           id: team.id,
           name: team.name,
+          players: team.players,
           games: 0,
           wins: 0,
           draw: 0,
@@ -151,5 +164,20 @@ export default {
 .completed-games-table td {
   border: 1px solid gainsboro;
   padding: 5px;
+}
+
+.team-name {
+  font-weight: bold;
+  text-align: right;
+  font-size: 12px;
+}
+
+.team-players {
+  font-size: 10px;
+  text-align: right;
+}
+
+.cell {
+  font-weight: bold;
 }
 </style>
