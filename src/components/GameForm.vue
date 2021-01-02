@@ -61,6 +61,16 @@ import EmoticonDeadOutlineIcon from 'vue-material-design-icons/EmoticonDeadOutli
 import PlayCircleOutlineIcon from 'vue-material-design-icons/PlayCircleOutline.vue';
 import ControlPanelBtn from './primitives/controlPanelBtn.vue';
 
+const GAME_DURATION_MINUTES = 1;
+const AMOUNT_OF_GOALS_TO_FINISH = 2;
+
+const GAME_STATUSES = {
+  NOT_STARTED_YET: 0,
+  HAS_STARTED: 1,
+  LAST_ATTACK: 2,
+  COMPLETED: 3,
+};
+
 export default {
   name: 'game-form-view',
   components: {
@@ -74,28 +84,34 @@ export default {
   data() {
     return {
       currentGameHasStarted: false,
-      timeLeft: 7 * 60,
+      gameStatus: GAME_STATUSES.NOT_STARTED_YET,
+      timeLeft: GAME_DURATION_MINUTES * 60,
       timeoutId : null,
       intervalId: null,
     };
   },
   methods: {
     ...mapMutations(['initFirstGame', 'completeTheCurrentGame']),
-    async tryEndTheGame() {
+    checkIfEnoughGoalsAreScored() {
       const { firstTeam, secondTeam } = this.currentGameDay.currentGame;
-      if (this.timeLeft === 0 || firstTeam.goals.length === 2 || secondTeam.goals.length === 2) {
+
+      return firstTeam.goals.length === AMOUNT_OF_GOALS_TO_FINISH || secondTeam.goals.length === AMOUNT_OF_GOALS_TO_FINISH;
+    },
+    async tryEndTheGame() {
+      if (this.timeLeft === 0 || this.checkIfEnoughGoalsAreScored()) {
         if (this.currentGameHasStarted) {
           await this.completeTheCurrentGame();
         }
 
         clearTimeout(this.timeoutId);
         clearInterval(this.intervalId);
-        this.timeLeft = 7 * 60;
+        this.timeLeft = GAME_DURATION_MINUTES * 60;
         this.currentGameHasStarted = false;
       }
     },
     startCurrentGame() {
       this.currentGameHasStarted = true;
+      this.gameStatus = GAME_STATUSES.HAS_STARTED;
       this.intervalId = setInterval(() => {
         this.timeLeft -= 1;
       }, 1000);
@@ -104,7 +120,7 @@ export default {
         clearInterval(this.intervalId);
         this.timeLeft = 0;
         this.tryEndTheGame();
-      }, 1000 * 7 * 60);
+      }, 1000 * GAME_DURATION_MINUTES * 60);
     },
     createFirstGame({ firstTeamId, secondTeamId }) {
       this.initFirstGame({
@@ -123,7 +139,7 @@ export default {
     async handleGoal(teamId, playerId) {
       const goal = {
         author: playerId,
-        time: 7 * 60 - this.timeLeft,
+        time: GAME_DURATION_MINUTES * 60 - this.timeLeft,
       };
 
       const updatedGame = JSON.parse(JSON.stringify(this.currentGameDay.currentGame));
