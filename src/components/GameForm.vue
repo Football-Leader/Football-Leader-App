@@ -41,7 +41,7 @@
         </tr>
       </table>
     </div>
-    <div>
+    <div style="margin-top: 50px;">
       <completed-games />
     </div>
   </div>
