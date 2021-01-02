@@ -5,9 +5,9 @@
     <div v-if="!selectBeginnersModalIsVisible">
       <table style="width: 100%">
         <colgroup>
-          <col span="1" style="width: 40%;">
-          <col span="1" style="width: 20%;">
-          <col span="1" style="width: 40%;">
+          <col span="1" style="width: 35%;">
+          <col span="1" style="width: 30%;">
+          <col span="1" style="width: 35%;">
         </colgroup>
         <tr>
           <td>
@@ -22,15 +22,11 @@
                       @click="startCurrentGame"
                       v-if="!currentGameHasStarted"
                       size="large">
-              Начать игру
+              <play-circle-outline-icon fill-color="white" />
+              <div>Начать игру</div>
             </button>
             <div v-else class="time-left">
               {{timeLeftFormatted}}
-            </div>
-            <div class="complete-day-btn">
-              <a-button type="danger" size="small" @click="completeTheDay">
-                <a-icon type="close-circle" /> Завершить день
-              </a-button>
             </div>
           </td>
           <td>
@@ -40,6 +36,10 @@
           </td>
         </tr>
       </table>
+    </div>
+    <div class="control-panel">
+      <control-panel-btn color="black" :icon="selfGoalIcon" label="Автогол" />
+      <control-panel-btn color="red" :icon="closeIcon" label="Завершить день" @click.native="completeTheDay" />
     </div>
     <div style="margin-top: 50px;">
       <completed-games />
@@ -55,6 +55,12 @@ import TeamInMatchColumn from '@/components/gameForm/teamInMatchColumn';
 import GameScore from '@/components/gameForm/gameScore';
 import CompletedGames from '@/components/gameForm/completedGames';
 
+import MenuIcon from 'vue-material-design-icons/Menu.vue';
+import CloseCircleOutlineIcon from 'vue-material-design-icons/CloseCircleOutline.vue';
+import EmoticonDeadOutlineIcon from 'vue-material-design-icons/EmoticonDeadOutline.vue';
+import PlayCircleOutlineIcon from 'vue-material-design-icons/PlayCircleOutline.vue';
+import ControlPanelBtn from './primitives/controlPanelBtn.vue';
+
 export default {
   name: 'game-form-view',
   components: {
@@ -62,6 +68,8 @@ export default {
     TeamInMatchColumn,
     GameScore,
     CompletedGames,
+    ControlPanelBtn,
+    PlayCircleOutlineIcon,
   },
   data() {
     return {
@@ -146,6 +154,15 @@ export default {
   },
   computed: {
     ...mapState(['currentGameDay', 'players']),
+    menuIcon() {
+      return MenuIcon;
+    },
+    selfGoalIcon() {
+      return EmoticonDeadOutlineIcon;
+    },
+    closeIcon() {
+      return CloseCircleOutlineIcon;
+    },
     timeLeftFormatted() {
       const minutes = Math.floor(this.timeLeft / 60);
       let seconds = `${this.timeLeft % 60}`;
@@ -184,5 +201,17 @@ export default {
 
   .complete-day-btn {
     margin-top: 50px;
+  }
+
+  .control-panel {
+    display: flex;
+    margin-top: 10px;
+  }
+
+  .control-panel .icon {
+    display: flex;
+    align-items: center;
+    border: 1px solid;
+    box-shadow: #1890ff;
   }
 </style>
