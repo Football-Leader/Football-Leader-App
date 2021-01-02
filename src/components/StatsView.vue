@@ -1,52 +1,26 @@
 <template>
   <div>
-    <table style="width: 100%">
-      <tr>
-        <th>Игрок</th>
-        <th>Забил</th>
-      </tr>
-      <tr v-for="scorer in scorers" :key="scorer.id">
-        <td col="3">{{scorer.name}} ({{scorer.team.name}})</td>
-        <td col="1">{{scorer.scored}}</td>
-      </tr>
-    </table>
+    <scorer-table />
     <a-divider />
-    <table style="width: 100%">
-      <tr>
-        <th>Команда</th>
-        <th>И</th>
-        <th>В</th>
-        <th>Н</th>
-        <th>П</th>
-        <th>Заб</th>
-        <th>Проп</th>
-        <th>Разница</th>
-        <th>Очки</th>
-      </tr>
-      <tr v-for="teamStat in teamStats" :key="teamStat.id">
-        <td>{{teamStat.name}}</td>
-        <td>{{teamStat.games}}</td>
-        <td>{{teamStat.wins}}</td>
-        <td>{{teamStat.draw}}</td>
-        <td>{{teamStat.loses}}</td>
-        <td>{{teamStat.scored}}</td>
-        <td>{{teamStat.failed}}</td>
-        <td>{{teamStat.scored - teamStat.failed}}</td>
-        <td>{{teamStat.points}}</td>
-      </tr>
-    </table>
-    <div>
-      Для тестирования, поиска багов и отладки:
-      <textarea :value="debugInfo" />
+    <completed-games-table />
+    <div style="position: absolute; bottom: 0; width: 100%;">
+      Техническая информация:
+      <textarea :value="debugInfo" style="width: 100%; font-size: 10px;"/>
     </div>
   </div>
 </template>
 
 <script>
   import { mapState } from 'vuex';
+  import ScorerTable from '@/components/resultsView/ScorerTable';
+  import CompletedGamesTable from '@/components/resultsView/CompletedGamesTable';
 
   export default {
     name: 'stats-view',
+    components: {
+      ScorerTable,
+      CompletedGamesTable,
+    },
     computed: {
       ...mapState(['currentGameDay', 'players']),
       scorers() {
