@@ -12,32 +12,27 @@
         <tr>
           <td>
             <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam"
-                                  :game-has-started="currentGameHasStarted"
+                                  :game-has-started="gameIsStarted || lastAttach"
                                   @goal="playerId => handleGoal(currentGameDay.currentGame.firstTeam.id, playerId)"/>
           </td>
           <td>
             <game-score />
-            <button class="start-the-game-btn"
-                      type="primary"
-                      @click="startCurrentGame"
-                      v-if="!currentGameHasStarted"
-                      size="large">
-              <play-circle-outline-icon fill-color="white" />
-              <div>Начать игру</div>
-            </button>
-            <div v-else class="time-left">
-              {{timeLeftFormatted}}
+            <start-game-btn @click="startCurrentGame" v-if="gameNotStarted" />
+            <time-left v-else-if="gameIsStarted" :time-left="timeLeft" />
+            <div v-else-if="lastAttach">
+              <div>Последняя атака</div>
+              <button @click="tryEndTheGame">Завершить игру</button>
             </div>
           </td>
           <td>
             <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
-                                  :game-has-started="currentGameHasStarted"
+                                  :game-has-started="gameIsStarted || lastAttach"
                                   @goal="playerId => handleGoal(currentGameDay.currentGame.secondTeam.id, playerId)"/>
           </td>
         </tr>
       </table>
     </div>
-    <div class="control-panel">
+    <div class="control-panel" v-if="!selectBeginnersModalIsVisible">
       <control-panel-btn color="black" :icon="selfGoalIcon" label="Автогол" />
       <control-panel-btn color="red" :icon="closeIcon" label="Завершить день" @click.native="completeTheDay" />
     </div>
@@ -55,11 +50,12 @@ import TeamInMatchColumn from '@/components/gameForm/teamInMatchColumn';
 import GameScore from '@/components/gameForm/gameScore';
 import CompletedGames from '@/components/gameForm/completedGames';
 
-import MenuIcon from 'vue-material-design-icons/Menu.vue';
 import CloseCircleOutlineIcon from 'vue-material-design-icons/CloseCircleOutline.vue';
 import EmoticonDeadOutlineIcon from 'vue-material-design-icons/EmoticonDeadOutline.vue';
-import PlayCircleOutlineIcon from 'vue-material-design-icons/PlayCircleOutline.vue';
+
+import StartGameBtn from './primitives/startGameBtn.vue';
 import ControlPanelBtn from './primitives/controlPanelBtn.vue';
+import TimeLeft from './primitives/timeLeftLabel.vue';
 
 const GAME_DURATION_MINUTES = 1;
 const AMOUNT_OF_GOALS_TO_FINISH = 2;
@@ -68,7 +64,6 @@ const GAME_STATUSES = {
   NOT_STARTED_YET: 0,
   HAS_STARTED: 1,
   LAST_ATTACK: 2,
-  COMPLETED: 3,
 };
 
 export default {
@@ -79,11 +74,11 @@ export default {
     GameScore,
     CompletedGames,
     ControlPanelBtn,
-    PlayCircleOutlineIcon,
+    StartGameBtn,
+    TimeLeft,
   },
   data() {
     return {
-      currentGameHasStarted: false,
       gameStatus: GAME_STATUSES.NOT_STARTED_YET,
       timeLeft: GAME_DURATION_MINUTES * 60,
       timeoutId : null,
@@ -99,18 +94,17 @@ export default {
     },
     async tryEndTheGame() {
       if (this.timeLeft === 0 || this.checkIfEnoughGoalsAreScored()) {
-        if (this.currentGameHasStarted) {
+        if (this.gameIsStarted || this.lastAttach) {
           await this.completeTheCurrentGame();
         }
 
         clearTimeout(this.timeoutId);
         clearInterval(this.intervalId);
         this.timeLeft = GAME_DURATION_MINUTES * 60;
-        this.currentGameHasStarted = false;
+        this.gameStatus = GAME_STATUSES.NOT_STARTED_YET;
       }
     },
     startCurrentGame() {
-      this.currentGameHasStarted = true;
       this.gameStatus = GAME_STATUSES.HAS_STARTED;
       this.intervalId = setInterval(() => {
         this.timeLeft -= 1;
@@ -119,7 +113,7 @@ export default {
       this.timeoutId = setTimeout(() => {
         clearInterval(this.intervalId);
         this.timeLeft = 0;
-        this.tryEndTheGame();
+        this.gameStatus = GAME_STATUSES.LAST_ATTACK;
       }, 1000 * GAME_DURATION_MINUTES * 60);
     },
     createFirstGame({ firstTeamId, secondTeamId }) {
@@ -170,51 +164,29 @@ export default {
   },
   computed: {
     ...mapState(['currentGameDay', 'players']),
-    menuIcon() {
-      return MenuIcon;
-    },
     selfGoalIcon() {
       return EmoticonDeadOutlineIcon;
     },
     closeIcon() {
       return CloseCircleOutlineIcon;
     },
-    timeLeftFormatted() {
-      const minutes = Math.floor(this.timeLeft / 60);
-      let seconds = `${this.timeLeft % 60}`;
-
-      if (seconds.length === 1) {
-        seconds = `0${seconds}`;
-      }
-
-      if (minutes) {
-        return `Осталось ${minutes}:${seconds}`;
-      }
-
-      return `Осталось ${seconds} секунд`;
-    },
     selectBeginnersModalIsVisible() {
       return !this.currentGameDay.currentGame;
+    },
+    gameNotStarted() {
+      return this.gameStatus === GAME_STATUSES.NOT_STARTED_YET;
+    },
+    gameIsStarted() {
+      return this.gameStatus === GAME_STATUSES.HAS_STARTED;
+    },
+    lastAttach() {
+      return this.gameStatus === GAME_STATUSES.LAST_ATTACK;
     },
   },
 }
 </script>
 
 <style scoped>
-  .start-the-game-btn {
-    margin-top: 50px;
-    padding: 8px 2px;
-    background: #1890ff;
-    color: white;
-    border: 1px solid #1890ff;
-    border-radius: 2px;
-  }
-
-  .time-left {
-    margin-top: 50px;
-    font-size: 25px;
-  }
-
   .complete-day-btn {
     margin-top: 50px;
   }
