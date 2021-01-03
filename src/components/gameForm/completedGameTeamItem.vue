@@ -3,7 +3,7 @@
     <div class="team-name" :class="{ won }">{{getTeam(teamId).name}}</div>
     <div class="goals">
       <div v-for="(goal, index) in goals" :key="index" class="goal-item">
-        <soccer-icon :size="16" />{{formatTime(goal.time)}}' {{getPlayerName(goal.author)}}
+        <soccer-icon :size="16" :fill-color="goal.isSelfGoal ? 'red' : 'black'"/>{{formatTime(goal.time)}}' {{getPlayerName(goal.author)}}
       </div>
     </div>
   </div>

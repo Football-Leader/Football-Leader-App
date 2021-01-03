@@ -33,7 +33,7 @@ export default {
       });
 
       const allGoalsMap = {};
-      allGoals.forEach((goal) => {
+      allGoals.filter(goal => !goal.isSelfGoal).forEach((goal) => {
         const author = goal.author;
         if (!allGoalsMap[author]) {
           allGoalsMap[author] = 1;

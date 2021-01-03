@@ -1,7 +1,10 @@
 <template>
   <div>
-    <select-beginners-modal :visible="selectBeginnersModalIsVisible"
-                            @ok="createFirstGame" />
+    <select-beginners-modal :visible="selectBeginnersModalIsVisible" @ok="createFirstGame" />
+    <self-goal-form-modal :visible="selfGoalFormIsVisible"
+                          :current-game="currentGameDay.currentGame"
+                          @cancel="closeSelfGoalForm"
+                          @goal="handleGoal"/>
     <div v-if="!selectBeginnersModalIsVisible">
       <table style="width: 100%">
         <colgroup>
@@ -12,7 +15,7 @@
         <tr>
           <td>
             <team-in-match-column :team-in-match="currentGameDay.currentGame.firstTeam"
-                                  :game-has-started="gameIsStarted || lastAttach"
+                                  :game-has-started="gameIsLive"
                                   @goal="playerId => handleGoal(currentGameDay.currentGame.firstTeam.id, playerId)"/>
           </td>
           <td>
@@ -26,14 +29,14 @@
           </td>
           <td>
             <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
-                                  :game-has-started="gameIsStarted || lastAttach"
+                                  :game-has-started="gameIsLive"
                                   @goal="playerId => handleGoal(currentGameDay.currentGame.secondTeam.id, playerId)"/>
           </td>
         </tr>
       </table>
     </div>
     <div class="control-panel" v-if="!selectBeginnersModalIsVisible">
-      <control-panel-btn color="black" :icon="selfGoalIcon" label="Автогол" />
+      <control-panel-btn v-if="gameIsLive" color="black" :icon="selfGoalIcon" label="Автогол" @click.native="showSelfGoalForm" />
       <control-panel-btn color="red" :icon="closeIcon" label="Завершить день" @click.native="completeTheDay" />
     </div>
     <div style="margin-top: 50px;">
@@ -46,6 +49,7 @@
 import { mapState, mapMutations } from 'vuex';
 
 import SelectBeginnersModal from '@/components/gameForm/selectBeginnersModal';
+import SelfGoalFormModal from '@/components/gameForm/selfGoalFormModal';
 import TeamInMatchColumn from '@/components/gameForm/teamInMatchColumn';
 import GameScore from '@/components/gameForm/gameScore';
 import CompletedGames from '@/components/gameForm/completedGames';
@@ -70,6 +74,7 @@ export default {
   name: 'game-form-view',
   components: {
     SelectBeginnersModal,
+    SelfGoalFormModal,
     TeamInMatchColumn,
     GameScore,
     CompletedGames,
@@ -83,6 +88,7 @@ export default {
       timeLeft: GAME_DURATION_MINUTES * 60,
       timeoutId : null,
       intervalId: null,
+      selfGoalFormIsVisible: false,
     };
   },
   methods: {
@@ -130,10 +136,11 @@ export default {
         },
       });
     },
-    async handleGoal(teamId, playerId) {
+    async handleGoal(teamId, playerId, isSelfGoal = false) {
       const goal = {
         author: playerId,
         time: GAME_DURATION_MINUTES * 60 - this.timeLeft,
+        isSelfGoal,
       };
 
       const updatedGame = JSON.parse(JSON.stringify(this.currentGameDay.currentGame));
@@ -161,6 +168,12 @@ export default {
         },
       });
     },
+    showSelfGoalForm() {
+      this.selfGoalFormIsVisible = true;
+    },
+    closeSelfGoalForm() {
+      this.selfGoalFormIsVisible = false;
+    },
   },
   computed: {
     ...mapState(['currentGameDay', 'players']),
@@ -181,6 +194,9 @@ export default {
     },
     lastAttach() {
       return this.gameStatus === GAME_STATUSES.LAST_ATTACK;
+    },
+    gameIsLive() {
+      return this.gameIsStarted || this.lastAttach;
     },
   },
 }
