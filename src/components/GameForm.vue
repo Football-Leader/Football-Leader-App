@@ -61,7 +61,7 @@ import StartGameBtn from './primitives/startGameBtn.vue';
 import ControlPanelBtn from './primitives/controlPanelBtn.vue';
 import TimeLeft from './primitives/timeLeftLabel.vue';
 
-const GAME_DURATION_MINUTES = 1;
+const GAME_DURATION_MINUTES = 7;
 const AMOUNT_OF_GOALS_TO_FINISH = 2;
 
 const GAME_STATUSES = {
