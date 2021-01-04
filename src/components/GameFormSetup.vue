@@ -11,7 +11,7 @@
                 </template>
               </a-list-item>
             </a-list>
-            <a-select default-value="" style="width: 120px" @change="(value) => handleChange(team, value)">
+            <a-select default-value="" class="select-player" @change="(value) => handleChange(team, value)">
               <a-select-option :value="player.id" v-for="player in readyForSelect" :key="player.id">
                 {{player.name}}
               </a-select-option>
@@ -21,7 +21,7 @@
       </a-row>
 
 
-      <a-button block @click="next" class="button" v-if="teams.every(team => team.players.length === 5)">
+      <a-button block @click="next" class="button">
             Продолжить
       </a-button>
     </div>
@@ -76,6 +76,10 @@ export default {
     readyForSelect() {
       return this.players.filter((player) => {
         return !this.teams.some((team) => team.players.includes(player.id));
+      }).sort((a, b) => {
+        if (a.name > b.name) return 1;
+        if (a.name < b.name) return -1;
+        return 0;
       });
     },
   },
@@ -112,3 +116,10 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+  .select-player {
+    width: 100%;
+    margin-top: 10px;
+  }
+</style>
