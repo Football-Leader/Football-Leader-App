@@ -34,28 +34,7 @@
           </td>
         </tr>
       </table>
-      <table style="width: 100%; table-layout: fixed">
-        <colgroup>
-          <col span="1" style="width: 45%;">
-          <col span="1" style="width: 10%;">
-          <col span="1" style="width: 45%;">
-        </colgroup>
-        <tr>
-          <td class="goal-item-cell">
-            <div v-for="(goal, index) in firstTeamGoals" :key="index">
-              <goal-item :goal="goal" />
-              <close-icon :size="16" fill-color="red" />
-            </div>
-          </td>
-          <td></td>
-          <td class="goal-item-cell">
-            <div v-for="(goal, index) in secondTeamGoals" :key="index">
-              <goal-item :goal="goal" />
-              <close-icon :size="16" fill-color="red" />
-            </div>
-          </td>
-        </tr>
-      </table>
+      <current-goals />
       <div class="control-panel">
         <control-panel-btn v-if="gameIsLive" color="black" :icon="selfGoalIcon" label="Автогол" @click.native="showSelfGoalForm" />
         <control-panel-btn color="red" :icon="closeIcon" label="Завершить день" @click.native="completeTheDay" />
@@ -75,15 +54,17 @@ import SelfGoalFormModal from '@/components/gameForm/selfGoalFormModal';
 import TeamInMatchColumn from '@/components/gameForm/teamInMatchColumn';
 import GameScore from '@/components/gameForm/gameScore';
 import CompletedGames from '@/components/gameForm/completedGames';
+import CurrentGoals from '@/components/gameForm/currentGoals';
 
 import CloseCircleOutlineIcon from 'vue-material-design-icons/CloseCircleOutline.vue';
 import EmoticonDeadOutlineIcon from 'vue-material-design-icons/EmoticonDeadOutline.vue';
-import CloseIcon from 'vue-material-design-icons/Close.vue';
 
 import StartGameBtn from './primitives/startGameBtn.vue';
 import ControlPanelBtn from './primitives/controlPanelBtn.vue';
 import TimeLeft from './primitives/timeLeftLabel.vue';
-import GoalItem from '@/components/primitives/goalItem';
+
+import { generateId } from '@/utils/generateId';
+import { clone } from '@/utils/clone';
 
 const GAME_DURATION_MINUTES = 7;
 const AMOUNT_OF_GOALS_TO_FINISH = 2;
@@ -97,7 +78,6 @@ const GAME_STATUSES = {
 export default {
   name: 'game-form-view',
   components: {
-    GoalItem,
     SelectBeginnersModal,
     SelfGoalFormModal,
     TeamInMatchColumn,
@@ -106,7 +86,7 @@ export default {
     ControlPanelBtn,
     StartGameBtn,
     TimeLeft,
-    CloseIcon,
+    CurrentGoals,
   },
   data() {
     return {
@@ -167,9 +147,10 @@ export default {
         author: playerId,
         time: GAME_DURATION_MINUTES * 60 - this.timeLeft,
         isSelfGoal,
+        id: generateId(),
       };
 
-      const updatedGame = JSON.parse(JSON.stringify(this.currentGameDay.currentGame));
+      const updatedGame = clone(this.currentGameDay.currentGame);
       if (updatedGame.firstTeam.id === teamId) {
         updatedGame.firstTeam.goals.push(goal);
       } else {
@@ -254,10 +235,5 @@ export default {
 
   .current-game-form {
     height: calc(100vh - var(--header-height));
-  }
-
-  .goal-item-cell {
-    display: flex;
-    align-items: center;
   }
 </style>

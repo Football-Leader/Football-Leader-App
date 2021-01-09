@@ -2,7 +2,7 @@
   <div>
     <div class="team-name" :class="{ won }">{{getTeam(teamId).name}}</div>
     <div class="goals">
-      <goal-item v-for="(goal, index) in goals" :key="index" :goal="goal" />
+      <goal-item v-for="goal in goals" :key="goal.id" :goal="goal" />
     </div>
   </div>
 </template>
