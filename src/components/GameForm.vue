@@ -5,7 +5,7 @@
                           :current-game="currentGameDay.currentGame"
                           @cancel="closeSelfGoalForm"
                           @goal="handleGoal"/>
-    <div v-if="!selectBeginnersModalIsVisible">
+    <div v-if="!selectBeginnersModalIsVisible" class="current-game-form">
       <table style="width: 100%">
         <colgroup>
           <col span="1" style="width: 35%;">
@@ -34,10 +34,10 @@
           </td>
         </tr>
       </table>
-    </div>
-    <div class="control-panel" v-if="!selectBeginnersModalIsVisible">
-      <control-panel-btn v-if="gameIsLive" color="black" :icon="selfGoalIcon" label="Автогол" @click.native="showSelfGoalForm" />
-      <control-panel-btn color="red" :icon="closeIcon" label="Завершить день" @click.native="completeTheDay" />
+      <div class="control-panel">
+        <control-panel-btn v-if="gameIsLive" color="black" :icon="selfGoalIcon" label="Автогол" @click.native="showSelfGoalForm" />
+        <control-panel-btn color="red" :icon="closeIcon" label="Завершить день" @click.native="completeTheDay" />
+      </div>
     </div>
     <div style="margin-top: 50px;">
       <completed-games />
@@ -209,7 +209,8 @@ export default {
 
   .control-panel {
     display: flex;
-    margin-top: 10px;
+    position: absolute;
+    bottom: 5px;
   }
 
   .control-panel .icon {
@@ -217,5 +218,9 @@ export default {
     align-items: center;
     border: 1px solid;
     box-shadow: #1890ff;
+  }
+
+  .current-game-form {
+    height: calc(100vh - var(--header-height));
   }
 </style>

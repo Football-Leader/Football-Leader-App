@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <a-layout>
-      <a-layout-header class="layout-header">
+      <app-header>
         Футбольный предводитель
-      </a-layout-header>
+      </app-header>
       <a-layout-content>
         <router-view />
       </a-layout-content>
@@ -13,10 +13,12 @@
 
 <script>
 
+import AppHeader from './components/basic/header';
+
 export default {
   name: 'App',
   components: {
-
+    AppHeader,
   },
   created() {
     window.vueRouter = this.$router;
@@ -39,5 +41,9 @@ export default {
 
 .layout-header {
   color: white;
+}
+
+:root {
+  --header-height: 64px;
 }
 </style>
