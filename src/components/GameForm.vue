@@ -26,6 +26,9 @@
               <div>Последняя атака</div>
               <button @click="tryEndTheGame">Завершить игру</button>
             </div>
+            <div v-else>
+              <button @click="completeTheCurrentGameAndInitNew">Начать следующую игру</button>
+            </div>
           </td>
           <td>
             <team-in-match-column :team-in-match="currentGameDay.currentGame.secondTeam"
@@ -73,6 +76,7 @@ const GAME_STATUSES = {
   NOT_STARTED_YET: 0,
   HAS_STARTED: 1,
   LAST_ATTACK: 2,
+  COMPLETED: 3,
 };
 
 export default {
@@ -107,13 +111,12 @@ export default {
     async tryEndTheGame() {
       if (this.timeLeft === 0 || this.checkIfEnoughGoalsAreScored()) {
         if (this.gameIsStarted || this.lastAttach) {
-          await this.completeTheCurrentGame();
+          await this.markCurrentGameAsCompleted();
+          //await this.completeTheCurrentGame();
         }
 
         clearTimeout(this.timeoutId);
         clearInterval(this.intervalId);
-        this.timeLeft = GAME_DURATION_MINUTES * 60;
-        this.gameStatus = GAME_STATUSES.NOT_STARTED_YET;
       }
     },
     startCurrentGame() {
@@ -181,6 +184,14 @@ export default {
     closeSelfGoalForm() {
       this.selfGoalFormIsVisible = false;
     },
+    markCurrentGameAsCompleted() {
+      this.gameStatus = GAME_STATUSES.COMPLETED;
+    },
+    async completeTheCurrentGameAndInitNew() {
+      await this.completeTheCurrentGame();
+      this.timeLeft = GAME_DURATION_MINUTES * 60;
+      this.gameStatus = GAME_STATUSES.NOT_STARTED_YET;
+    },
   },
   computed: {
     ...mapState(['currentGameDay', 'players']),
@@ -205,11 +216,16 @@ export default {
     gameIsStarted() {
       return this.gameStatus === GAME_STATUSES.HAS_STARTED;
     },
+    gameIsCompleted() {
+      return this.gameStatus === GAME_STATUSES.COMPLETED;
+    },
     lastAttach() {
       return this.gameStatus === GAME_STATUSES.LAST_ATTACK;
     },
     gameIsLive() {
-      return this.gameIsStarted || this.lastAttach;
+      return this.gameIsStarted || this.lastAttach || this.gameIsCompleted
+        && this.currentGameDay.currentGame.firstTeam.goals.length < AMOUNT_OF_GOALS_TO_FINISH
+        && this.currentGameDay.currentGame.secondTeam.goals.length < AMOUNT_OF_GOALS_TO_FINISH;
     },
   },
 }
