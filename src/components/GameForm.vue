@@ -41,12 +41,18 @@
           <col span="1" style="width: 45%;">
         </colgroup>
         <tr>
-          <td>
-            <goal-item v-for="(goal, index) in firstTeamGoals" :key="index" :goal="goal" />
+          <td class="goal-item-cell">
+            <div v-for="(goal, index) in firstTeamGoals" :key="index">
+              <goal-item :goal="goal" />
+              <close-icon :size="16" fill-color="red" />
+            </div>
           </td>
           <td></td>
-          <td>
-            <goal-item v-for="(goal, index) in secondTeamGoals" :key="index" :goal="goal" />
+          <td class="goal-item-cell">
+            <div v-for="(goal, index) in secondTeamGoals" :key="index">
+              <goal-item :goal="goal" />
+              <close-icon :size="16" fill-color="red" />
+            </div>
           </td>
         </tr>
       </table>
@@ -72,6 +78,7 @@ import CompletedGames from '@/components/gameForm/completedGames';
 
 import CloseCircleOutlineIcon from 'vue-material-design-icons/CloseCircleOutline.vue';
 import EmoticonDeadOutlineIcon from 'vue-material-design-icons/EmoticonDeadOutline.vue';
+import CloseIcon from 'vue-material-design-icons/Close.vue';
 
 import StartGameBtn from './primitives/startGameBtn.vue';
 import ControlPanelBtn from './primitives/controlPanelBtn.vue';
@@ -99,6 +106,7 @@ export default {
     ControlPanelBtn,
     StartGameBtn,
     TimeLeft,
+    CloseIcon,
   },
   data() {
     return {
@@ -246,5 +254,10 @@ export default {
 
   .current-game-form {
     height: calc(100vh - var(--header-height));
+  }
+
+  .goal-item-cell {
+    display: flex;
+    align-items: center;
   }
 </style>
