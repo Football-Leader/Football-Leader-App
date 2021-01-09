@@ -34,6 +34,22 @@
           </td>
         </tr>
       </table>
+      <table style="width: 100%; table-layout: fixed">
+        <colgroup>
+          <col span="1" style="width: 45%;">
+          <col span="1" style="width: 10%;">
+          <col span="1" style="width: 45%;">
+        </colgroup>
+        <tr>
+          <td>
+            <goal-item v-for="(goal, index) in firstTeamGoals" :key="index" :goal="goal" />
+          </td>
+          <td></td>
+          <td>
+            <goal-item v-for="(goal, index) in secondTeamGoals" :key="index" :goal="goal" />
+          </td>
+        </tr>
+      </table>
       <div class="control-panel">
         <control-panel-btn v-if="gameIsLive" color="black" :icon="selfGoalIcon" label="Автогол" @click.native="showSelfGoalForm" />
         <control-panel-btn color="red" :icon="closeIcon" label="Завершить день" @click.native="completeTheDay" />
@@ -60,6 +76,7 @@ import EmoticonDeadOutlineIcon from 'vue-material-design-icons/EmoticonDeadOutli
 import StartGameBtn from './primitives/startGameBtn.vue';
 import ControlPanelBtn from './primitives/controlPanelBtn.vue';
 import TimeLeft from './primitives/timeLeftLabel.vue';
+import GoalItem from '@/components/primitives/goalItem';
 
 const GAME_DURATION_MINUTES = 7;
 const AMOUNT_OF_GOALS_TO_FINISH = 2;
@@ -73,6 +90,7 @@ const GAME_STATUSES = {
 export default {
   name: 'game-form-view',
   components: {
+    GoalItem,
     SelectBeginnersModal,
     SelfGoalFormModal,
     TeamInMatchColumn,
@@ -185,6 +203,12 @@ export default {
     },
     selectBeginnersModalIsVisible() {
       return !this.currentGameDay.currentGame;
+    },
+    firstTeamGoals() {
+      return this.currentGameDay.currentGame?.firstTeam.goals;
+    },
+    secondTeamGoals() {
+      return this.currentGameDay.currentGame?.secondTeam.goals;
     },
     gameNotStarted() {
       return this.gameStatus === GAME_STATUSES.NOT_STARTED_YET;
