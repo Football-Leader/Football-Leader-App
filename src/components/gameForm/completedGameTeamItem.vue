@@ -2,9 +2,7 @@
   <div>
     <div class="team-name" :class="{ won }">{{getTeam(teamId).name}}</div>
     <div class="goals">
-      <div v-for="(goal, index) in goals" :key="index" class="goal-item">
-        <soccer-icon :size="16" :fill-color="goal.isSelfGoal ? 'red' : 'black'"/>{{formatTime(goal.time)}}' {{getPlayerName(goal.author)}}
-      </div>
+      <goal-item v-for="(goal, index) in goals" :key="index" :goal="goal" />
     </div>
   </div>
 </template>
@@ -12,7 +10,7 @@
 <script>
   import { mapState } from 'vuex';
 
-  import SoccerIcon from 'vue-material-design-icons/Soccer.vue';
+  import GoalItem from '../primitives/goalItem.vue';
 
   export default {
     name: 'completed-game-team-item',
@@ -22,20 +20,14 @@
       won: Boolean,
     },
     components: {
-      SoccerIcon,
+      GoalItem,
     },
     computed: {
-      ...mapState(['currentGameDay', 'players']),
+      ...mapState(['currentGameDay']),
     },
     methods: {
       getTeam(teamId) {
         return this.currentGameDay.teams.find(t => t.id === teamId);
-      },
-      formatTime(time) {
-        return `${Math.floor(time / 60 + 1)} мин`;
-      },
-      getPlayerName(author) {
-        return this.players.find((p) => p.id === author).name;
       },
     },
   }
@@ -53,11 +45,5 @@
 
   .goals {
     font-size: 10px;
-  }
-
-  .goal-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 </style>
