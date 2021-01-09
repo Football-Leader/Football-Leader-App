@@ -59,6 +59,7 @@ export default {
 
   .player-btn {
     border: 1px solid gainsboro;
+    height: 60px;
     background: #eaecef;
     padding: 8px 0;
     color: black;

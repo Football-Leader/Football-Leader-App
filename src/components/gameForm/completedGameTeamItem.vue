@@ -2,15 +2,15 @@
   <div>
     <div class="team-name" :class="{ won }">{{getTeam(teamId).name}}</div>
     <div class="goals">
-      <div v-for="(goal, index) in goals" :key="index">
-        {{formatTime(goal.time)}}' {{getPlayerName(goal.author)}}
-      </div>
+      <goal-item v-for="goal in goals" :key="goal.id" :goal="goal" />
     </div>
   </div>
 </template>
 
 <script>
   import { mapState } from 'vuex';
+
+  import GoalItem from '../primitives/goalItem.vue';
 
   export default {
     name: 'completed-game-team-item',
@@ -19,18 +19,15 @@
       goals: Array,
       won: Boolean,
     },
+    components: {
+      GoalItem,
+    },
     computed: {
-      ...mapState(['currentGameDay', 'players']),
+      ...mapState(['currentGameDay']),
     },
     methods: {
       getTeam(teamId) {
         return this.currentGameDay.teams.find(t => t.id === teamId);
-      },
-      formatTime(time) {
-        return `${Math.floor(time / 60 + 1)} мин`;
-      },
-      getPlayerName(author) {
-        return this.players.find((p) => p.id === author).name;
       },
     },
   }
