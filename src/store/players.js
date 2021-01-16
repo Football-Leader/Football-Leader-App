@@ -139,6 +139,10 @@ const players = [
     id: '34',
     name: '-',
   },
+  {
+    id: '35',
+    name: 'Газпром',
+  },
 ];
 
 export default players;

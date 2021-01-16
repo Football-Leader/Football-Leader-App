@@ -11,6 +11,12 @@
         Начать новый день
       </a-button>
     </router-link>
+
+    <router-link :to="{ name: 'settings' }" v-slot="{ navigate }">
+      <a-button block @click="navigate" class="button">
+        Настройки
+      </a-button>
+    </router-link>
   </div>
 </template>
 
@@ -29,6 +35,7 @@
     justify-content: space-evenly;
     margin: 100px 0;
     align-items: center;
+    padding: 0 20px;
   }
 
   .button {

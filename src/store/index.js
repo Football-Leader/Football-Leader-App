@@ -16,6 +16,10 @@ const store = new Vuex.Store({
       completedGames: [],
       currentGame: null,
     },
+    settings: {
+      gameDuration: 7,
+      goalsToCompleteCount: 2,
+    },
   },
   mutations: {
     createPlayer(state, { name }) {
@@ -56,6 +60,10 @@ const store = new Vuex.Store({
           goals: [],
         },
       };
+    },
+    editSettings(state, { gameDuration, goalsToCompleteCount }) {
+      state.settings.gameDuration = gameDuration;
+      state.settings.goalsToCompleteCount = goalsToCompleteCount;
     },
   },
 });

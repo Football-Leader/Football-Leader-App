@@ -69,9 +69,6 @@ import TimeLeft from './primitives/timeLeftLabel.vue';
 import { generateId } from '@/utils/generateId';
 import { clone } from '@/utils/clone';
 
-const GAME_DURATION_MINUTES = 7;
-const AMOUNT_OF_GOALS_TO_FINISH = 2;
-
 const GAME_STATUSES = {
   NOT_STARTED_YET: 0,
   HAS_STARTED: 1,
@@ -95,18 +92,21 @@ export default {
   data() {
     return {
       gameStatus: GAME_STATUSES.NOT_STARTED_YET,
-      timeLeft: GAME_DURATION_MINUTES * 60,
+      timeLeft: null, // this.GAME_DURATION_MINUTES * 60
       timeoutId : null,
       intervalId: null,
       selfGoalFormIsVisible: false,
     };
+  },
+  created() {
+    this.timeLeft = this.GAME_DURATION_MINUTES * 60;
   },
   methods: {
     ...mapMutations(['initFirstGame', 'completeTheCurrentGame']),
     checkIfEnoughGoalsAreScored() {
       const { firstTeam, secondTeam } = this.currentGameDay.currentGame;
 
-      return firstTeam.goals.length === AMOUNT_OF_GOALS_TO_FINISH || secondTeam.goals.length === AMOUNT_OF_GOALS_TO_FINISH;
+      return firstTeam.goals.length === this.AMOUNT_OF_GOALS_TO_FINISH || secondTeam.goals.length === this.AMOUNT_OF_GOALS_TO_FINISH;
     },
     async tryEndTheGame() {
       if (this.timeLeft === 0 || this.checkIfEnoughGoalsAreScored()) {
@@ -129,7 +129,7 @@ export default {
         clearInterval(this.intervalId);
         this.timeLeft = 0;
         this.gameStatus = GAME_STATUSES.LAST_ATTACK;
-      }, 1000 * GAME_DURATION_MINUTES * 60);
+      }, 1000 * this.GAME_DURATION_MINUTES * 60);
     },
     createFirstGame({ firstTeamId, secondTeamId }) {
       this.initFirstGame({
@@ -148,7 +148,7 @@ export default {
     async handleGoal(teamId, playerId, isSelfGoal = false) {
       const goal = {
         author: playerId,
-        time: GAME_DURATION_MINUTES * 60 - this.timeLeft,
+        time: this.GAME_DURATION_MINUTES * 60 - this.timeLeft,
         isSelfGoal,
         id: generateId(),
       };
@@ -189,12 +189,18 @@ export default {
     },
     async completeTheCurrentGameAndInitNew() {
       await this.completeTheCurrentGame();
-      this.timeLeft = GAME_DURATION_MINUTES * 60;
+      this.timeLeft = this.GAME_DURATION_MINUTES * 60;
       this.gameStatus = GAME_STATUSES.NOT_STARTED_YET;
     },
   },
   computed: {
-    ...mapState(['currentGameDay', 'players']),
+    ...mapState(['currentGameDay', 'players', 'settings']),
+    GAME_DURATION_MINUTES() {
+      return this.settings.gameDuration;
+    },
+    AMOUNT_OF_GOALS_TO_FINISH() {
+      return this.settings.goalsToCompleteCount;
+    },
     selfGoalIcon() {
       return EmoticonDeadOutlineIcon;
     },
@@ -224,8 +230,8 @@ export default {
     },
     gameIsLive() {
       return this.gameIsStarted || this.lastAttach || this.gameIsCompleted
-        && this.currentGameDay.currentGame.firstTeam.goals.length < AMOUNT_OF_GOALS_TO_FINISH
-        && this.currentGameDay.currentGame.secondTeam.goals.length < AMOUNT_OF_GOALS_TO_FINISH;
+        && this.currentGameDay.currentGame.firstTeam.goals.length < this.AMOUNT_OF_GOALS_TO_FINISH
+        && this.currentGameDay.currentGame.secondTeam.goals.length < this.AMOUNT_OF_GOALS_TO_FINISH;
     },
   },
 }
