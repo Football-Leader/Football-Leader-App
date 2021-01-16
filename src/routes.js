@@ -3,6 +3,7 @@ import PlayersView from '@/components/PlayersView';
 import GameFormSetup from '@/components/GameFormSetup';
 import GameForm from '@/components/GameForm';
 import StatsView from '@/components/StatsView';
+import SettingsForm from '@/components/SettingsForm';
 
 import Vue from 'vue';
 import VueRouter from 'vue-router';
@@ -34,6 +35,11 @@ const routes = [
     path: '/stats',
     name: 'stats',
     component: StatsView,
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: SettingsForm,
   },
 ];
 
